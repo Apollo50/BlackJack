@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messenger
+module Interface
   def start_message
     puts 'Glad to welcome you in our RubyCasino.'
   end
@@ -39,6 +39,26 @@ module Messenger
     sleep 2
   end
 
+  def message_show_hand(user)
+    print "#{user.name}'s hand: "
+    user.hand.each do |card|
+      print card.value
+      print card.suit
+      print ' '
+    end
+    puts ''
+    puts "#{user.name}'s total points: #{user.points}"
+    puts ''
+  end
+
+  def message_show_hide_hand(user)
+    print "#{user.name}'s hand:"
+    user.hand.length.times do
+      print ' * '
+    end
+    2.times { puts '' }
+  end
+
   def message_user_won(winner, loser)
     puts '~~~~~~~~~~~~~~~~~~~~~~'
     puts "#{winner.name} - WIN!"
@@ -73,7 +93,7 @@ module Messenger
   def message_show_round_result(player, dealer)
     puts '~~~~~~~~~~~~~~~~~~~~~'
     puts 'ROUND RESULT:'
-    player.show_hand
-    dealer.show_hand
+    message_show_hand(player)
+    message_show_hand(dealer)
   end
 end

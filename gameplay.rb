@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class GamePlay
-  include Messenger
+  include Interface
   attr_reader :player, :dealer, :deck, :pot
 
   @@skip = 0
@@ -10,8 +10,8 @@ class GamePlay
   def initialize
     start_message
     player = create_player
-    @player = Player.new(player)
-    @dealer = Dealer.new
+    @player = User.new(player)
+    @dealer = User.new('Dealer')
     @pot = 0
     @deck = Deck.new
     begin_game
@@ -37,8 +37,6 @@ class GamePlay
       when 3
         open_cards
         break
-      else
-        puts 'Choose one of options!'
       end
       if (player.cards_count == 3 || dealer.cards_count == 3) || @@skip == 1
         open_cards
@@ -56,10 +54,13 @@ class GamePlay
     end
   end
 
+  protected
+
   def first_round
     2.times { take_card(player) }
     2.times { take_card(dealer) }
     make_bet
+    count_points
     show_hands
   end
 
@@ -86,6 +87,7 @@ class GamePlay
 
   def change_deck
     @deck = Deck.new
+    @@turns = 0
   end
 
   def player_turn
@@ -94,8 +96,13 @@ class GamePlay
   end
 
   def show_hands
-    player.show_hand
-    dealer.show_hide_hand
+    message_show_hand(player)
+    message_show_hide_hand(dealer)
+  end
+
+  def count_points
+    player.count_points
+    dealer.count_points
   end
 
   def clear_hands
@@ -110,11 +117,12 @@ class GamePlay
   end
 
   def open_cards
+    count_points
     message_show_round_result(player, dealer)
     if (player.fail? && dealer.fail?) || (player.points == dealer.points)
       message_nobody_won
       give_bet_back
-    elsif (player.points > dealer.points) && (player.points < 22)
+    elsif ( (player.points > dealer.points) && player.points < 22 ) || ( dealer.fail? && player.points < 22 )
       message_user_won(player, dealer)
       win(player)
     else

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class User
-  attr_reader :points, :cash, :name
+  attr_reader :points, :cash, :name, :hand
   include Validation
 
   def initialize(name)
