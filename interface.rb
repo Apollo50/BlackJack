@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Interface
+class Interface
   def start_message
     puts 'Glad to welcome you in our RubyCasino.'
   end

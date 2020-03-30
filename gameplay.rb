@@ -1,20 +1,19 @@
 # frozen_string_literal: true
 
 class GamePlay
-  include Interface
-  attr_reader :player, :dealer, :deck, :pot
+  attr_reader :player, :dealer, :deck, :pot, :interface
 
   @@skip = 0
   @@turns = 0
 
   def initialize
-    start_message
-    player = create_player
+    @interface = Interface.new
+    interface.start_message
+    player = interface.create_player
     @player = User.new(player)
     @dealer = User.new('Dealer')
     @pot = 0
     @deck = Deck.new
-    begin_game
   rescue StandardError => e
     puts e
     initialize
@@ -23,11 +22,11 @@ class GamePlay
   def play
     @@turns += 1
     change_deck if @@turns == 7
-    message_lets_play
+    interface.message_lets_play
     first_round
     loop do
-      message_menu_first_round
-      case player_choice
+      interface.message_menu_first_round
+      case interface.player_choice
       when 1
         @@skip += 1
         dealer_turn
@@ -44,13 +43,13 @@ class GamePlay
       end
     end
     if player.cash != 0 && dealer.cash != 0
-      exit if message_play_again == 'exit'
+      exit if interface.message_play_again == 'exit'
       clear_hands
       play
     elsif player.cash.zero?
-      message_game_result(dealer, player)
+      interface.message_game_result(dealer, player)
     else
-      message_game_result(player, dealer)
+      interface.message_game_result(player, dealer)
     end
   end
 
@@ -81,7 +80,7 @@ class GamePlay
   end
 
   def dealer_turn
-    message_turn(dealer)
+    interface.message_turn(dealer)
     take_card(dealer) if dealer.points < 17
   end
 
@@ -91,13 +90,13 @@ class GamePlay
   end
 
   def player_turn
-    message_turn(player)
+    interface.message_turn(player)
     take_card(player)
   end
 
   def show_hands
-    message_show_hand(player)
-    message_show_hide_hand(dealer)
+    interface.message_show_hand(player)
+    interface.message_show_hide_hand(dealer)
   end
 
   def count_points
@@ -118,17 +117,17 @@ class GamePlay
 
   def open_cards
     count_points
-    message_show_round_result(player, dealer)
+    interface.message_show_round_result(player, dealer)
     if (player.fail? && dealer.fail?) || (player.points == dealer.points)
-      message_nobody_won
+      interface.message_nobody_won
       give_bet_back
-    elsif ( (player.points > dealer.points) && player.points < 22 ) || ( dealer.fail? && player.points < 22 )
-      message_user_won(player, dealer)
+    elsif ((player.points > dealer.points) && player.points < 22) || (dealer.fail? && player.points < 22)
+      interface.message_user_won(player, dealer)
       win(player)
     else
-      message_user_won(dealer, player)
+      interface.message_user_won(dealer, player)
       win(dealer)
     end
-    message_show_balances(player, dealer)
+    interface.message_show_balances(player, dealer)
   end
 end

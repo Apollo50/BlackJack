@@ -1,28 +1,26 @@
 # frozen_string_literal: true
 
 class Deck
-  attr_reader :deck
-  CARD_VALUE = ['A', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K'].freeze
-  CARD_SUIT = ['♢', '♣', '♡', '♠'].freeze
+  attr_reader :cards
 
   def initialize
-    @deck = []
+    @cards = []
     create_deck
-    @deck.shuffle!
+    @cards.shuffle!
   end
 
   def create_deck
-    CARD_VALUE.each do |value|
-      CARD_SUIT.each do |suit|
-        @deck << Card.new(value, suit)
+    Card.card_value.each do |value|
+      Card.card_suit.each do |suit|
+        @cards << Card.new(value, suit)
       end
     end
   end
 
   def get_card
-    @deck.shuffle!
-    card = @deck[0]
-    @deck.delete_at(0)
+    @cards.shuffle!
+    card = @cards[0]
+    @cards.delete_at(0)
     card
   end
 end
